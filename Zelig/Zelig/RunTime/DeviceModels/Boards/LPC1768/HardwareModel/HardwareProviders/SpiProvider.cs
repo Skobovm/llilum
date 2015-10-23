@@ -13,7 +13,7 @@ namespace Microsoft.Zelig.LPC1768
     {
         public static readonly SpiChannelInfo SPI0 = new SpiChannelInfo() {
             Mosi = (int)PinName.p5,
-            Miso = (int)PinName.p6,
+            Miso = unchecked((int)PinName.NC),
             Sclk = (int)PinName.p7,
             DefaultChipSelect = (int)PinName.p8,
             SetupTime = 0,
