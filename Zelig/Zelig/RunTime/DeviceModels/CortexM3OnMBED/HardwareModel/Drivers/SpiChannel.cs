@@ -12,14 +12,14 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
 
     public class SpiChannel : Microsoft.Llilum.Devices.Spi.SpiChannel
     {
-        private unsafe SpiImpl*             m_spi;
-        private unsafe LlilumGpio.GpioPin   m_altCsPin;
-        private UInt16                      m_dataWidth;
-        private bool                        m_disposed;
-        private int                         m_setupTimeInCycles;
-        private int                         m_holdTimeInCycles;
-        private bool                        m_activeLow;
-        private ISpiChannelInfo             m_channelInfo;
+        private unsafe SpiImpl* m_spi;
+        private unsafe LlilumGpio.GpioPin m_altCsPin;
+        private UInt16 m_dataWidth;
+        private bool m_disposed;
+        private int m_setupTimeInCycles;
+        private int m_holdTimeInCycles;
+        private bool m_activeLow;
+        private ISpiChannelInfo m_channelInfo;
 
         //--//
 
@@ -27,7 +27,7 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
         {
             m_channelInfo = info;
         }
-        
+
         ~SpiChannel()
         {
             Dispose(false);
@@ -75,44 +75,44 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
         /// <param name="writeBuffer">Bytes to write. Leave null for read-only</param>
         /// <param name="readBuffer">Bytes to read. Leave null for write-only</param>
         /// <param name="startReadOffset">Index at which to start reading bytes</param>
-        public unsafe override void WriteRead( byte[ ] writeBuffer, byte[ ] readBuffer, int startReadOffset )
+        public unsafe override void WriteRead(byte[] writeBuffer, byte[] readBuffer, int startReadOffset)
         {
-            
+
             // Enable the chip select
             if (m_altCsPin != null)
             {
                 m_altCsPin.Write(m_activeLow ? 0 : 1);
-                
+
                 // Setup time in cycles
-                Processor.Delay( m_setupTimeInCycles );
+                Processor.Delay(m_setupTimeInCycles);
             }
 
             // Are we reading, writing, or both?
-            bool isRead  = (readBuffer  != null) && readBuffer .Length > 0;
+            bool isRead = (readBuffer != null) && readBuffer.Length > 0;
             bool isWrite = (writeBuffer != null) && writeBuffer.Length > 0;
 
             // We need to be at least one of these
-            if(!isRead && !isWrite)
+            if (!isRead && !isWrite)
             {
-                throw new ArgumentException( );
+                throw new ArgumentException();
             }
 
             // The number of times we will be transferring for 8bit transactions
             int transferCount = isWrite ? writeBuffer.Length : readBuffer.Length;
-            
+
             if (m_dataWidth == 8)
             {
                 // 8 bit transactions
                 int i = 0;
-                while(i < transferCount)
+                while (i < transferCount)
                 {
                     int writeVal = isWrite ? writeBuffer[i] : 0;
 
-                    int result = tmp_spi_master_write( m_spi, writeVal );
-                    
-                    if ( isRead && i >= startReadOffset )
+                    int result = tmp_spi_master_write(m_spi, writeVal);
+
+                    if (isRead && i >= startReadOffset)
                     {
-                        readBuffer[ i ] = (byte)result;
+                        readBuffer[i] = (byte)result;
                     }
 
                     i++;
@@ -122,19 +122,19 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
             {
                 // 16 bit transactions
                 int i = 0;
-                while(i < transferCount)
+                while (i < transferCount)
                 {
                     int writeVal = isWrite ? writeBuffer[i] | (writeBuffer[i + 1] << 8) : 0;
 
-                    int result = tmp_spi_master_write( m_spi, writeVal);
-                    
-                    if ( isRead && i >= startReadOffset )
+                    int result = tmp_spi_master_write(m_spi, writeVal);
+
+                    if (isRead && i >= startReadOffset)
                     {
-                        readBuffer[ i     ] = (byte)(result & 0x000000FF);
-                        readBuffer[ i + 1 ] = (byte)((result & 0x0000FF00) >> 8);
+                        readBuffer[i] = (byte)(result & 0x000000FF);
+                        readBuffer[i + 1] = (byte)((result & 0x0000FF00) >> 8);
                     }
 
-                    i+=2;
+                    i += 2;
                 }
 
             }
@@ -150,14 +150,14 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
                         // Spin until transaction is complete
                     }
                 }
-                
+
                 // Hold time in cycles
-                Processor.Delay( m_holdTimeInCycles );
+                Processor.Delay(m_holdTimeInCycles);
 
                 m_altCsPin.Write(m_activeLow ? 1 : 0);
             }
         }
-                
+
         public unsafe override void SetupChannel(int bits, SpiMode mode, bool isSlave)
         {
             int slave = isSlave ? 1 : 0;
@@ -172,27 +172,38 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
                 m_dataWidth = 8;
             }
 
-            tmp_spi_format( m_spi, m_dataWidth, (int)mode, slave );
+            tmp_spi_format(m_spi, m_dataWidth, (int)mode, slave);
         }
-        
+
         public unsafe override void SetupTiming(int frequencyInHz, int setupTime, int holdTime)
         {
             m_setupTimeInCycles = setupTime;
-            m_holdTimeInCycles  = holdTime;
+            m_holdTimeInCycles = holdTime;
 
             if (m_setupTimeInCycles < 0)
             {
                 m_setupTimeInCycles = 100;
             }
-            
+
             if (m_holdTimeInCycles < 0)
             {
                 m_holdTimeInCycles = 100;
             }
-            
-            tmp_spi_frequency (m_spi, frequencyInHz);
+
+            tmp_spi_frequency(m_spi, frequencyInHz);
         }
-  
+
+        public unsafe override void SetupPins(ISpiChannelInfo channelInfo)
+        {
+            fixed (SpiImpl** spi_ptr = &m_spi)
+            {
+                tmp_spi_alloc(spi_ptr);
+            }
+
+            // Mbed specific SPI initialization
+            tmp_spi_init(m_spi, channelInfo.Mosi, channelInfo.Miso, channelInfo.Sclk, channelInfo.DefaultChipSelect);
+        }
+
         /// <summary>
         /// Initializes the mbed SpiChannel with the appropriate pins
         /// </summary>
@@ -202,27 +213,25 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
         /// <param name="csPin"></param>
         /// <param name="useAlternateCsPin">True if the chip select pin is not the default one</param>
         /// <returns></returns>
-        public unsafe override void SetupPins( ISpiChannelInfo channelInfo, bool useAlternateCsPin, int alternateCsPin )
+        public unsafe override void SetupPins(ISpiChannelInfo channelInfo, int alternateCsPin)
         {
             fixed (SpiImpl** spi_ptr = &m_spi)
             {
                 tmp_spi_alloc(spi_ptr);
             }
 
-            // Mbed specific SPI initialization
-            tmp_spi_init(m_spi, channelInfo.Mosi, channelInfo.Miso, channelInfo.Sclk, useAlternateCsPin ? Board.Instance.NCPin : channelInfo.ChipSelect);
-            
+            // Since we are using an alternate CS pin, initialize CS with the Invalid Pin
+            tmp_spi_init(m_spi, channelInfo.Mosi, channelInfo.Miso, channelInfo.Sclk, HardwareProvider.Instance.InvalidPin);
 
-            // Set up alternate pin for manual toggling
-            if (useAlternateCsPin)
+            // Mbed assumes active low, so we only set up active low/high when using the alternate CS pin
+            m_activeLow = channelInfo.ActiveLow;
+
+            // Set up the pin, unless it's the invalid pin. It has already been reserved
+            if (alternateCsPin != HardwareProvider.Instance.InvalidPin)
             {
-                // Mbed assumes active low, so we only set up active low/high when using the alternate CS pin
-                m_activeLow = channelInfo.ActiveLow;
-                
-                // Set up the pin. It has already been reserved
                 m_altCsPin = GpioPin.TryCreateGpioPin(alternateCsPin);
 
-                if(m_altCsPin == null)
+                if (m_altCsPin == null)
                 {
                     return;
                 }
