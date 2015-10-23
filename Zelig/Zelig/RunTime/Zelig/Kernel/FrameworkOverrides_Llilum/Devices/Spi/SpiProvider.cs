@@ -17,7 +17,6 @@ namespace Microsoft.Zelig.Runtime
         public int DefaultChipSelect { get; set; }
         public int SetupTime { get; set; }
         public int HoldTime { get; set; }
-        public bool ReserveMisoPin { get; set; }
         public bool ActiveLow { get; set; }
     }
 
