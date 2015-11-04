@@ -8,7 +8,7 @@
     <ProjectGuid>{1705887B-E636-4FA3-AE40-2D431AF1511C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Microsoft.Zelig.K64F</RootNamespace>
+    <RootNamespace>Microsoft.Llilum.K64F</RootNamespace>
     <AssemblyName>K64F</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

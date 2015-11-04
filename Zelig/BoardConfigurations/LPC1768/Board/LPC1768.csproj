@@ -8,7 +8,7 @@
     <ProjectGuid>{CEE4D575-4B4B-42B0-B2F1-CC7198CB7306}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Microsoft.Zelig.LPC1768</RootNamespace>
+    <RootNamespace>Microsoft.Llilum.LPC1768</RootNamespace>
     <AssemblyName>LPC1768</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

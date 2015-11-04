@@ -2,8 +2,9 @@
 // Copyright (c) Microsoft Corporation.    All rights reserved.
 //
 
-#define LPC1768
+//#define LPC1768
 //#define K64F
+#define STM32L152
 //#define USE_I2C
 //#define USE_SPI
 #define USE_GPIO
@@ -44,7 +45,9 @@ namespace Microsoft.Zelig.Test.mbed.Simple
     using LPC1768 = Llilum.LPC1768;
     using System.Runtime.InteropServices;
 #elif (K64F)
-    using K64F = Zelig.K64F;
+    using K64F = Llilum.K64F;
+#elif (STM32L152)
+    using STM32L152 = Llilum.STM32L152;
 #else
 #error No target board defined.
 #endif
@@ -152,7 +155,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
 #elif K64F
         static int threadPin = (int)K64F.PinName.LED4;
 #else
-#error No target board defined.
+//#error No target board defined.
 #endif
 
         static int[] pinNumbers =
@@ -165,6 +168,9 @@ namespace Microsoft.Zelig.Test.mbed.Simple
             (int)K64F.PinName.LED1,
             (int)K64F.PinName.LED2,
             (int)K64F.PinName.LED3,
+#elif (STM32L152)
+            (int)STM32L152.PinName.LED1,
+            (int)STM32L152.PinName.A1,
 #else
 #error No target board defined.
 #endif
@@ -198,8 +204,8 @@ namespace Microsoft.Zelig.Test.mbed.Simple
                 pins[i] = pin;
             }
 
-            var solitary = controller.OpenPin( threadPin );
-            solitary.SetDriveMode( GpioPinDriveMode.Output );
+            //var solitary = controller.OpenPin( threadPin );
+            //solitary.SetDriveMode( GpioPinDriveMode.Output );
 
             LedToggler[] blinkingModes = new LedToggler[3];
             blinkingModes[0] = new LedTogglerSimultaneous(pins);
@@ -225,15 +231,15 @@ namespace Microsoft.Zelig.Test.mbed.Simple
 #elif (K64F)
             int chipSelect = (int)K64F.PinName.PTD0;
 #else
-#error No target board defined.
+//#error No target board defined.
 #endif
-            SpiConnectionSettings settings = new SpiConnectionSettings(chipSelect)
-            {
-                ClockFrequency = 1000000,
-                Mode = SpiMode.Mode2
-            };
+            //SpiConnectionSettings settings = new SpiConnectionSettings(chipSelect)
+            //{
+            //    ClockFrequency = 1000000,
+            //    Mode = SpiMode.Mode2
+            //};
 
-            SpiDevice spiDevice = SpiDevice.FromIdAsync(busId, settings);
+            //SpiDevice spiDevice = SpiDevice.FromIdAsync(busId, settings);
             byte[] writeBuffer = new byte[1];
             byte[] writeBuffer2 = new byte[] { 0x1, 0x2, 0x3 };
             byte[] readBuffer = new byte[1];
@@ -263,40 +269,40 @@ namespace Microsoft.Zelig.Test.mbed.Simple
 #endif
             #endregion
 
-            int pinState = 1;
-            solitary.Write((GpioPinValue)pinState);
-            ZeligSupport.Timer.wait_ms(300);
-            solitary.Write((GpioPinValue)0);
-            ZeligSupport.Timer.wait_ms(300);
-            solitary.Write((GpioPinValue)pinState);
-            pinState = 0;
+            //int pinState = 1;
+            //solitary.Write((GpioPinValue)pinState);
+            //ZeligSupport.Timer.wait_ms(300);
+            //solitary.Write((GpioPinValue)0);
+            //ZeligSupport.Timer.wait_ms(300);
+            //solitary.Write((GpioPinValue)pinState);
+            //pinState = 0;
 
 #if (USE_THREADING)
-            var ev = new AutoResetEvent(false);
-            var solitaryBlinker = new Thread(delegate ()
-            {
-                while (true)
-                {
-                    ev.WaitOne(1000, false);
+            //var ev = new AutoResetEvent(false);
+            //var solitaryBlinker = new Thread(delegate ()
+            //{
+            //    while (true)
+            //    {
+            //        ev.WaitOne(1000, false);
 
-                    solitary.Write((GpioPinValue)pinState);
+            //        solitary.Write((GpioPinValue)pinState);
 
-                    pinState = ++pinState % 2;
-                }
-            });
-            solitaryBlinker.Start();
+            //        pinState = ++pinState % 2;
+            //    }
+            //});
+            //solitaryBlinker.Start();
 
-            var solitaryAlerter = new System.Threading.Timer((obj) =>
-            {
-                // blink 20 times very fast
-                int fastBlinks = 20;
-                while (fastBlinks-- > 0)
-                {
-                    ((AutoResetEvent)obj).Set();
+            //var solitaryAlerter = new System.Threading.Timer((obj) =>
+            //{
+            //    // blink 20 times very fast
+            //    int fastBlinks = 20;
+            //    while (fastBlinks-- > 0)
+            //    {
+            //        ((AutoResetEvent)obj).Set();
 
-                    Thread.Sleep(50);
-                }
-            }, ev, 2000, 5000);
+            //        Thread.Sleep(50);
+            //    }
+            //}, ev, 2000, 5000);
 
 #endif
 
