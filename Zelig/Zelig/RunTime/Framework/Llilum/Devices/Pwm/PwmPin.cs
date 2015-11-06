@@ -1,43 +1,48 @@
 ﻿//
-// Copyright (c) Microsoft Corporation.    All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 //
 
-namespace Microsoft.Llilum.Devices.Adc
+namespace Microsoft.Llilum.Devices.Pwm
 {
     using System;
     using System.Runtime.CompilerServices;
 
-    public class AdcPin : IDisposable
+    public class PwmPin : IDisposable
     {
-        private AdcChannel m_adcPin;
+        private PwmChannel m_pwmPin;
         private bool m_disposed = false;
         private int m_pinNumber;
 
-        public AdcPin(int pinNumber)
+        public PwmPin(int pinNumber)
         {
-            m_adcPin = TryAcquireAdcPin(pinNumber);
-            if (m_adcPin == null)
+            m_pwmPin = TryAcquirePwmPin(pinNumber);
+            if (m_pwmPin == null)
             {
                 throw new ArgumentException();
             }
 
-            m_adcPin.InitializePin();
+            m_pwmPin.InitializePin();
             m_pinNumber = pinNumber;
         }
 
-        ~AdcPin()
+        ~PwmPin()
         {
             Dispose(false);
         }
 
-        public uint ReadUnsigned()
+        public void SetDutyCycle(float ratio)
         {
-            return m_adcPin.ReadUnsigned();
+            m_pwmPin.SetDutyCycle(ratio);
         }
 
-        public float Read()
+        public void SetPeriod(int microSeconds)
         {
-            return m_adcPin.Read();
+            m_pwmPin.SetPeriod(microSeconds);
+        }
+
+        public void SetPulseWidth(int microSeconds)
+        {
+            m_pwmPin.SetPulseWidth(microSeconds);
         }
 
         protected virtual void Dispose(bool disposing)
@@ -46,7 +51,7 @@ namespace Microsoft.Llilum.Devices.Adc
             {
                 if (disposing)
                 {
-                    m_adcPin.Dispose();
+                    m_pwmPin.Dispose();
                 }
 
                 m_disposed = true;
@@ -60,6 +65,6 @@ namespace Microsoft.Llilum.Devices.Adc
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern AdcChannel TryAcquireAdcPin(int pinNumber);
+        private static extern PwmChannel TryAcquirePwmPin(int pinNumber);
     }
 }

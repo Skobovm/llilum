@@ -39,7 +39,7 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
         {
             if(disposing)
             {
-                Runtime.HardwareProvider.Instance.ReleasePins();
+                Runtime.HardwareProvider.Instance.ReleasePins(m_pinNumber);
             }
             unsafe
             {
