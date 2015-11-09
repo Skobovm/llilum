@@ -38,7 +38,8 @@ namespace Microsoft.Zelig.Test.mbed.Simple
     using Windows.Devices.Enumeration;
     using Windows.Devices.Adc;
     using System.IO.Ports;
-    using Llilum.Devices.Pwm;
+    using Windows.Devices.Pwm;
+    //using Llilum.Devices.Pwm;
 
     using ZeligSupport = Microsoft.Zelig.Support.mbed;
 
@@ -167,19 +168,6 @@ namespace Microsoft.Zelig.Test.mbed.Simple
             (int)K64F.PinName.LED1,
             (int)K64F.PinName.LED2,
             (int)K64F.PinName.LED3,
-#else
-#error No target board defined.
-#endif
-        };
-
-        static int[] pwmPins =
-        {
-#if (LPC1768)
-            (int)LPC1768.PinName.p21,
-            (int)LPC1768.PinName.p22,
-#elif (K64F)
-            (int)K64F.PinName.PTD0,
-            (int)K64F.PinName.PTA0,
 #else
 #error No target board defined.
 #endif
@@ -323,12 +311,13 @@ namespace Microsoft.Zelig.Test.mbed.Simple
 #endif
 
 #if (USE_PWM)
-            PwmPin pwmPin0 = new PwmPin(pwmPins[0]);
-            PwmPin pwmPin1 = new PwmPin(pwmPins[1]);
-            pwmPin0.SetPeriod(2000);
-            pwmPin1.SetPeriod(2000);
-            pwmPin0.SetDutyCycle(0.6F);
-            pwmPin1.SetPulseWidth(600);
+            var pwmController = PwmController.GetDefaultAsync();
+
+            pwmController.SetDesiredFrequency(1000000);
+            var pwmPin = pwmController.OpenPin(0);
+            pwmPin.SetActiveDutyCyclePercentage(0.4F);
+            pwmPin.Start();
+
 #endif
             float readVal = 0;
             while (true)

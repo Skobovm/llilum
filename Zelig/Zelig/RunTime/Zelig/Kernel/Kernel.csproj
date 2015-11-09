@@ -111,6 +111,8 @@
     <Compile Include="FrameworkOverrides_Windows\Devices\Adc\AdcProviderUwp.cs" />
     <Compile Include="FrameworkOverrides_Windows\Devices\I2c\I2cDeviceImplUwp.cs" />
     <Compile Include="FrameworkOverrides_Windows\Devices\I2c\I2cProviderUwp.cs" />
+    <Compile Include="FrameworkOverrides_Windows\Devices\Pwm\PwmControllerImpl.cs" />
+    <Compile Include="FrameworkOverrides_Windows\Devices\Pwm\PwmProviderUwp.cs" />
     <Compile Include="FrameworkOverrides_Windows\Devices\Spi\SpiDeviceImplUwp.cs" />
     <Compile Include="FrameworkOverrides_Windows\Devices\Spi\SpiProviderUwp.cs" />
     <Compile Include="GarbageCollectors\MarkAndSweepCollector.cs" />

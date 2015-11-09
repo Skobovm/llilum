@@ -78,6 +78,7 @@
     <Compile Include="HardwareModel\Drivers\SystemTimer.cs" />
     <Compile Include="HardwareModel\HardwareProvidersUwp\AdcProviderUwp.cs" />
     <Compile Include="HardwareModel\HardwareProvidersUwp\I2cProviderUwp.cs" />
+    <Compile Include="HardwareModel\HardwareProvidersUwp\PwmProviderUwp.cs" />
     <Compile Include="HardwareModel\HardwareProvidersUwp\SpiProviderUwp.cs" />
     <Compile Include="HardwareModel\HardwareProviders\GpioProvider.cs" />
     <Compile Include="HardwareModel\HardwareProviders\I2cProvider.cs" />
@@ -86,6 +87,9 @@
     <Compile Include="HardwareModel\Processor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SystemServices\ThreadManager.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
   </ItemGroup>
   <Choose>
     <When Condition="Exists('..\..\..\ZeligBuild\Target\bin\Debug\')">
