@@ -10,6 +10,9 @@ namespace Windows.Devices.Pwm
 
     internal class DefaultPwmControllerProvider : IPwmControllerProvider
     {
+        /// <summary>
+        /// Used to keep track of the pin past and present state for UWP
+        /// </summary>
         private class ControllerPin
         {
             public Llilum.PwmPin    Pin;
@@ -17,10 +20,10 @@ namespace Windows.Devices.Pwm
             public bool             Enabled;
         }
 
-        private Llilum.IPwmChannelInfoUwp m_providerInfo;
-        private ControllerPin[] m_pwmPins;
-        private object m_channelLock;
-        private double m_frequency;
+        private readonly    Llilum.IPwmChannelInfoUwp   m_providerInfo;
+        private             ControllerPin[]             m_pwmPins;
+        private             object                      m_channelLock;
+        private             double                      m_frequency;
 
         public DefaultPwmControllerProvider(Llilum.IPwmChannelInfoUwp pwmInfoUwp)
         {
@@ -72,6 +75,7 @@ namespace Windows.Devices.Pwm
             {
                 if (m_pwmPins[pin] == null)
                 {
+                    // Try allocating first, to avoid releasing the pin if allocation fails
                     m_pwmPins[pin] = new ControllerPin();
                     Llilum.PwmPin newPin = new Llilum.PwmPin(m_providerInfo.PwmPinNumbers[pin]);
 

@@ -32,16 +32,22 @@ namespace Microsoft.Llilum.Devices.Pwm
 
         public void SetDutyCycle(float ratio)
         {
+            ThrowIfDisposed();
+
             m_pwmPin.SetDutyCycle(ratio);
         }
 
         public void SetPeriod(int microSeconds)
         {
+            ThrowIfDisposed();
+
             m_pwmPin.SetPeriod(microSeconds);
         }
 
         public void SetPulseWidth(int microSeconds)
         {
+            ThrowIfDisposed();
+
             m_pwmPin.SetPulseWidth(microSeconds);
         }
 
@@ -62,6 +68,14 @@ namespace Microsoft.Llilum.Devices.Pwm
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        private void ThrowIfDisposed()
+        {
+            if(m_disposed)
+            {
+                throw new ObjectDisposedException(null);
+            }
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

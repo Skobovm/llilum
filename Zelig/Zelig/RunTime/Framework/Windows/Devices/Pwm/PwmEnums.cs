@@ -6,7 +6,7 @@ namespace Windows.Devices.Pwm
 {
     public enum PwmPulsePolarity
     {
-        ActiveHigh,
+        ActiveHigh = 0,
         ActiveLow
     }
 }

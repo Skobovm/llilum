@@ -61,17 +61,31 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
 
         public unsafe override void SetDutyCycle(float ratio)
         {
+            ThrowIfDisposed();
+
             tmp_pwm_dutycycle(m_pwm, ratio);
         }
 
         public unsafe override void SetPulseWidth(int microSeconds)
         {
+            ThrowIfDisposed();
+
             tmp_pwm_pulsewidth_us(m_pwm, microSeconds);
         }
 
         public unsafe override void SetPeriod(int microSeconds)
         {
+            ThrowIfDisposed();
+
             tmp_pwm_period_us(m_pwm, microSeconds);
+        }
+
+        private unsafe void ThrowIfDisposed()
+        {
+            if(m_pwm == null)
+            {
+                throw new ObjectDisposedException(null);
+            }
         }
 
         [DllImport("C")]

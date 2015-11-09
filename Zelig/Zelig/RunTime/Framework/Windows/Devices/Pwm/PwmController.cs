@@ -6,8 +6,10 @@ namespace Windows.Devices.Pwm
 {
     using System;
     using Windows.Devices.Pwm.Provider;
+    using Windows.Foundation;
     using Llilum = Microsoft.Llilum.Devices.Pwm;
     using System.Runtime.CompilerServices;
+    using System.Collections.Generic;
 
     public sealed class PwmController
     {
@@ -63,12 +65,22 @@ namespace Windows.Devices.Pwm
             return new PwmPin(this, pinNumber);
         }
         
+        // TODO: Implement as IAsyncOperation
         public static /*IAsyncOperation<PwmController>*/PwmController GetDefaultAsync()
         {
             return new PwmController(new DefaultPwmControllerProvider(GetPwmProviderInfo()));
         }
 
-        //public static extern IAsyncOperation<IVectorView<PwmController>> GetControllersAsync([In] IPwmProvider provider);
+        //TODO: public static IAsyncOperation<IVectorView<PwmController>> GetControllersAsync(IPwmProvider provider)
+        public static IList<PwmController> GetControllersAsync(IPwmProvider provider)
+        {
+            List<PwmController> controllers = new List<PwmController>();
+            foreach(var controller in provider.GetControllers())
+            {
+                controllers.Add(new PwmController(controller));
+            }
+            return controllers;
+        }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern Llilum.IPwmChannelInfoUwp GetPwmProviderInfo();

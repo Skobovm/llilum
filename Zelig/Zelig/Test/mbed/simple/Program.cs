@@ -39,7 +39,6 @@ namespace Microsoft.Zelig.Test.mbed.Simple
     using Windows.Devices.Adc;
     using System.IO.Ports;
     using Windows.Devices.Pwm;
-    //using Llilum.Devices.Pwm;
 
     using ZeligSupport = Microsoft.Zelig.Support.mbed;
 
@@ -312,8 +311,8 @@ namespace Microsoft.Zelig.Test.mbed.Simple
 
 #if (USE_PWM)
             var pwmController = PwmController.GetDefaultAsync();
-
             pwmController.SetDesiredFrequency(1000000);
+
             var pwmPin = pwmController.OpenPin(0);
             pwmPin.SetActiveDutyCyclePercentage(0.4F);
             pwmPin.Start();

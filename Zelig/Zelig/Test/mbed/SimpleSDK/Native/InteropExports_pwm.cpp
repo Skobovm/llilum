@@ -1,7 +1,5 @@
 #include "helpers.h"
 
-//--//
-
 extern "C"
 {
 	void tmp_pwm_alloc_init(pwmout_t** obj, int pinNumber)

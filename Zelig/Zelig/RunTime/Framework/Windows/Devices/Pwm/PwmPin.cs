@@ -16,9 +16,9 @@ namespace Windows.Devices.Pwm
         {
             m_pwmController = controller;
             m_pinNumber = pinNumber;
+
+            // Default to 50% duty cycle
             m_dutyCycle = 0.5;
-            IsStarted = false;
-            Polarity = PwmPulsePolarity.ActiveHigh;
         }
 
         ~PwmPin()
@@ -65,10 +65,11 @@ namespace Windows.Devices.Pwm
         {
             ThrowIfDisposed();
 
-            // In case polarity changed after setting duty cycle, set it again
+            // In case polarity changed after setting duty cycle, update the duty cycle accordingly
             SetActiveDutyCyclePercentage(m_dutyCycle);
 
             m_pwmController.m_pwmControllerProvider.EnablePin(m_pinNumber);
+            IsStarted = true;
         }
 
         public void Stop()
@@ -76,6 +77,7 @@ namespace Windows.Devices.Pwm
             ThrowIfDisposed();
 
             m_pwmController.m_pwmControllerProvider.DisablePin(m_pinNumber);
+            IsStarted = false;
         }
 
         public void Dispose()

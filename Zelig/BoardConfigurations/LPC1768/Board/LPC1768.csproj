@@ -88,9 +88,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SystemServices\ThreadManager.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-  </ItemGroup>
   <Choose>
     <When Condition="Exists('..\..\..\ZeligBuild\Target\bin\Debug\')">
       <ItemGroup>
