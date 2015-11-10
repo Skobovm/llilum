@@ -181,7 +181,7 @@ namespace Windows.Devices.Pwm
 
             if(dutyCycle < 0 || dutyCycle > 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(dutyCycle), string.Empty);
+                throw new ArgumentOutOfRangeException(nameof(dutyCycle));
             }
 
             lock (m_channelLock)
@@ -214,17 +214,14 @@ namespace Windows.Devices.Pwm
         /// <returns>Pin index</returns>
         private int GetPinIndex(int pin)
         {
-            int pinIndex = -1;
-
             for(int i = m_providerInfo.PwmPinNumbers.Length - 1; i >= 0; i--)
             {
                 if(m_providerInfo.PwmPinNumbers[i] == pin)
                 {
-                    pinIndex = i;
-                    break;
+                    return i;
                 }
             }
-            return pinIndex;
+            return -1;
         }
     }
 }
