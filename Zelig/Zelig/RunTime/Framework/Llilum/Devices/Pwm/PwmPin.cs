@@ -10,7 +10,6 @@ namespace Microsoft.Llilum.Devices.Pwm
     public class PwmPin : IDisposable
     {
         private PwmChannel m_pwmPin;
-        private bool m_disposed = false;
         private int m_pinNumber;
 
         public PwmPin(int pinNumber)
@@ -53,14 +52,14 @@ namespace Microsoft.Llilum.Devices.Pwm
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!m_disposed)
+            if (m_pwmPin != null)
             {
                 if (disposing)
                 {
                     m_pwmPin.Dispose();
                 }
 
-                m_disposed = true;
+                m_pwmPin = null;
             }
         }
 
@@ -72,7 +71,7 @@ namespace Microsoft.Llilum.Devices.Pwm
 
         private void ThrowIfDisposed()
         {
-            if(m_disposed)
+            if(m_pwmPin == null)
             {
                 throw new ObjectDisposedException(null);
             }

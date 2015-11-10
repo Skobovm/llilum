@@ -15,13 +15,13 @@ namespace Microsoft.Zelig.Runtime
     {
         private sealed class EmptyPwmProvider : PwmProvider
         {
-            public override PwmChannel CreatePwmPin(int pinNumber)
+            public override PwmChannel TryCreatePwmPin(int pinNumber)
             {
                 throw new NotImplementedException();
             }
         }
 
-        public abstract PwmChannel CreatePwmPin(int pinNumber);
+        public abstract PwmChannel TryCreatePwmPin(int pinNumber);
 
         public static extern PwmProvider Instance
         {

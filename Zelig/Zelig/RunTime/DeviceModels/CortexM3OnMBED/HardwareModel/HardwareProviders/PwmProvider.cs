@@ -12,7 +12,7 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
 
     public sealed class PwmProvider : Runtime.PwmProvider
     {
-        public sealed override Framework.PwmChannel CreatePwmPin(int pinNumber)
+        public sealed override Framework.PwmChannel TryCreatePwmPin(int pinNumber)
         {
             if (!Runtime.HardwareProvider.Instance.TryReservePins(pinNumber))
             {

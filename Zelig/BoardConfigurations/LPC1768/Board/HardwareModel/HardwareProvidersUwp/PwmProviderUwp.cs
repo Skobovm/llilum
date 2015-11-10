@@ -13,9 +13,17 @@ namespace Microsoft.Llilum.LPC1768
     {
         private static readonly PwmChannelInfoUwp m_pwmInfo = new PwmChannelInfoUwp()
         {
-            MaxFrequency = 1000000,
-            MinFrequency = 0,
-            PwmPinNumbers = new int[] { (int)PinName.p21, (int)PinName.p22, (int)PinName.p23, (int)PinName.p24, (int)PinName.p25, (int)PinName.p26 }
+            MaxFrequency  = 1000000,
+            MinFrequency  = 0,
+            PwmPinNumbers = new int[] 
+            {
+                (int)PinName.p21,
+                (int)PinName.p22,
+                (int)PinName.p23,
+                (int)PinName.p24,
+                (int)PinName.p25,
+                (int)PinName.p26,
+            }
         };
 
         public override PwmChannelInfoUwp GetPwmChannelInfo()

@@ -25,26 +25,21 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
 
         public override void Dispose()
         {
-            unsafe
-            {
-                if (m_pwm != null)
-                {
-                    Dispose(true);
-                    GC.SuppressFinalize(this);
-                }
-            }
+             Dispose(true);
         }
 
-        private void Dispose(bool disposing)
+        private unsafe void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                Runtime.HardwareProvider.Instance.ReleasePins(m_pinNumber);
-            }
-            unsafe
+            if (m_pwm != null)
             {
                 tmp_pwm_free(m_pwm);
                 m_pwm = null;
+
+                if (disposing)
+                {
+                    Runtime.HardwareProvider.Instance.ReleasePins(m_pinNumber);
+                    GC.SuppressFinalize(this);
+                }
             }
         }
 

@@ -15,7 +15,20 @@ namespace Microsoft.Llilum.STM32L152
         {
             MaxFrequency = 1000000,
             MinFrequency = 0,
-            PwmPinNumbers = new int[] { (int)PinName.D0, (int)PinName.D1, (int)PinName.D3, (int)PinName.D4, (int)PinName.D5, (int)PinName.D6, (int)PinName.D9, (int)PinName.D10, (int)PinName.D11, (int)PinName.D12, (int)PinName.D13 }
+            PwmPinNumbers = new int[] 
+            {
+                (int)PinName.D0,
+                (int)PinName.D1,
+                (int)PinName.D3,
+                (int)PinName.D4,
+                (int)PinName.D5,
+                (int)PinName.D6,
+                (int)PinName.D9,
+                (int)PinName.D10,
+                (int)PinName.D11,
+                (int)PinName.D12,
+                (int)PinName.D13,
+            }
         };
 
         public override PwmChannelInfoUwp GetPwmChannelInfo()

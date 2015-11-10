@@ -57,6 +57,11 @@ namespace Windows.Devices.Pwm
         {
             ThrowIfDisposed();
 
+            if(dutyCyclePercentage < 0 || dutyCyclePercentage > 1)
+            {
+                throw new ArgumentOutOfRangeException("dutyCyclePercentage", string.Empty);
+            }
+
             m_dutyCycle = dutyCyclePercentage;
             m_pwmController.m_pwmControllerProvider.SetPulseParameters(m_pinNumber, dutyCyclePercentage, (Polarity == PwmPulsePolarity.ActiveLow));
         }
@@ -100,8 +105,8 @@ namespace Windows.Devices.Pwm
                 if (disposing)
                 {
                     m_pwmController.m_pwmControllerProvider.ReleasePin(m_pinNumber);
-                    m_pwmController = null;
                 }
+                m_pwmController = null;
             }
         }
     }

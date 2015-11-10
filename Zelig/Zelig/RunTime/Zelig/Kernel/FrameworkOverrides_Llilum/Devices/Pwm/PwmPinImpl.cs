@@ -11,7 +11,7 @@ namespace Microsoft.Zelig.Runtime
     {
         public static PwmChannel TryAcquirePwmPin(int pinNumber)
         {
-            return PwmProvider.Instance.CreatePwmPin(pinNumber);
+            return PwmProvider.Instance.TryCreatePwmPin(pinNumber);
         }
     }
 }

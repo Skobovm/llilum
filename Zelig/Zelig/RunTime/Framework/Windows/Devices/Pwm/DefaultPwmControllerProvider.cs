@@ -76,7 +76,7 @@ namespace Windows.Devices.Pwm
                 if (m_pwmPins[pin] == null)
                 {
                     // Try allocating first, to avoid releasing the pin if allocation fails
-                    m_pwmPins[pin] = new ControllerPin();
+                    ControllerPin controlPin = new ControllerPin();
                     Llilum.PwmPin newPin = new Llilum.PwmPin(m_providerInfo.PwmPinNumbers[pin]);
 
                     // Set frequency to current, and duty cycle to 0 (disabled)
@@ -86,7 +86,8 @@ namespace Windows.Devices.Pwm
                     // Initialize the pin to disabled by default
                     newPin.SetDutyCycle(0);
 
-                    m_pwmPins[pin].Pin = newPin;
+                    controlPin.Pin = newPin;
+                    m_pwmPins[pin] = controlPin;
                 }
             }
         }
@@ -148,7 +149,6 @@ namespace Windows.Devices.Pwm
                 }
 
                 m_pwmPins[pin].Pin.Dispose();
-                m_pwmPins[pin].Pin = null;
                 m_pwmPins[pin] = null;
             }
         }
@@ -166,7 +166,12 @@ namespace Windows.Devices.Pwm
         {
             if (pin >= m_pwmPins.Length || pin < 0)
             {
-                throw new InvalidOperationException();
+                throw new ArgumentException(string.Empty, "pin");
+            }
+
+            if(dutyCycle < 0 || dutyCycle > 1)
+            {
+                throw new ArgumentOutOfRangeException("dutyCycle", string.Empty);
             }
 
             lock (m_channelLock)

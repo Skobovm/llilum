@@ -53,10 +53,9 @@ namespace Microsoft.CortexM3OnMBED.HardwareModel
         private unsafe void Dispose(bool disposing)
         {
             // Native resources need to be freed unconditionally
-            tmp_spi_free(m_spi);
-
-            if (disposing)
+            if(m_spi != null)
             {
+                tmp_spi_free(m_spi);
             }
         }
 
