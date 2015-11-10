@@ -66,18 +66,20 @@ namespace Windows.Devices.Pwm
 
         public void AcquirePin(int pin)
         {
-            if (pin >= m_pwmPins.Length || pin < 0)
+            int pinIndex = GetPinIndex(pin);
+
+            if (pinIndex == -1)
             {
-                throw new InvalidOperationException();
+                throw new ArgumentException(null, nameof(pin));
             }
 
             lock (m_channelLock)
             {
-                if (m_pwmPins[pin] == null)
+                if (m_pwmPins[pinIndex] == null)
                 {
                     // Try allocating first, to avoid releasing the pin if allocation fails
                     ControllerPin controlPin = new ControllerPin();
-                    Llilum.PwmPin newPin = new Llilum.PwmPin(m_providerInfo.PwmPinNumbers[pin]);
+                    Llilum.PwmPin newPin = new Llilum.PwmPin(m_providerInfo.PwmPinNumbers[pinIndex]);
 
                     // Set frequency to current, and duty cycle to 0 (disabled)
                     int usPeriod = (int)(1000000.0 / ActualFrequency);
@@ -87,69 +89,75 @@ namespace Windows.Devices.Pwm
                     newPin.SetDutyCycle(0);
 
                     controlPin.Pin = newPin;
-                    m_pwmPins[pin] = controlPin;
+                    m_pwmPins[pinIndex] = controlPin;
                 }
             }
         }
 
         public void DisablePin(int pin)
         {
-            if (pin >= m_pwmPins.Length || pin < 0)
+            int pinIndex = GetPinIndex(pin);
+
+            if (pinIndex == -1)
             {
-                throw new InvalidOperationException();
+                throw new ArgumentException(null, nameof(pinIndex));
             }
 
             lock (m_channelLock)
             {
-                if (m_pwmPins[pin] == null)
+                if (m_pwmPins[pinIndex] == null)
                 {
                     throw new InvalidOperationException();
                 }
 
                 // mBed does not have a notion of disabling a pin, so we just
                 // set the duty cycle to 0
-                m_pwmPins[pin].Pin.SetDutyCycle(0);
-                m_pwmPins[pin].Enabled = false;
+                m_pwmPins[pinIndex].Pin.SetDutyCycle(0);
+                m_pwmPins[pinIndex].Enabled = false;
             }
         }
 
         public void EnablePin(int pin)
         {
-            if (pin >= m_pwmPins.Length || pin < 0)
+            int pinIndex = GetPinIndex(pin);
+
+            if (pinIndex == -1)
             {
-                throw new InvalidOperationException();
+                throw new ArgumentException(null, nameof(pin));
             }
 
             lock (m_channelLock)
             {
-                if (m_pwmPins[pin] == null)
+                if (m_pwmPins[pinIndex] == null)
                 {
                     throw new InvalidOperationException();
                 }
 
                 // mBed does not have a notion of enabling a pin, so we just
                 // set the duty cycle to its previous value
-                m_pwmPins[pin].Pin.SetDutyCycle((float)m_pwmPins[pin].PreviousDutyCycle);
-                m_pwmPins[pin].Enabled = true;
+                m_pwmPins[pinIndex].Pin.SetDutyCycle((float)m_pwmPins[pinIndex].PreviousDutyCycle);
+                m_pwmPins[pinIndex].Enabled = true;
             }
         }
 
         public void ReleasePin(int pin)
         {
-            if (pin >= m_pwmPins.Length || pin < 0)
+            int pinIndex = GetPinIndex(pin);
+
+            if (pinIndex == -1)
             {
-                throw new InvalidOperationException();
+                throw new ArgumentException(null, nameof(pin));
             }
 
             lock (m_channelLock)
             {
-                if (m_pwmPins[pin] == null)
+                if (m_pwmPins[pinIndex] == null)
                 {
                     throw new InvalidOperationException();
                 }
 
-                m_pwmPins[pin].Pin.Dispose();
-                m_pwmPins[pin] = null;
+                m_pwmPins[pinIndex].Pin.Dispose();
+                m_pwmPins[pinIndex] = null;
             }
         }
 
@@ -164,19 +172,21 @@ namespace Windows.Devices.Pwm
 
         public void SetPulseParameters(int pin, double dutyCycle, bool invertPolarity)
         {
-            if (pin >= m_pwmPins.Length || pin < 0)
+            int pinIndex = GetPinIndex(pin);
+
+            if (pinIndex == -1)
             {
-                throw new ArgumentException(string.Empty, "pin");
+                throw new ArgumentException(null, nameof(pin));
             }
 
             if(dutyCycle < 0 || dutyCycle > 1)
             {
-                throw new ArgumentOutOfRangeException("dutyCycle", string.Empty);
+                throw new ArgumentOutOfRangeException(nameof(dutyCycle), string.Empty);
             }
 
             lock (m_channelLock)
             {
-                if (m_pwmPins[pin] == null)
+                if (m_pwmPins[pinIndex] == null)
                 {
                     throw new InvalidOperationException();
                 }
@@ -187,14 +197,34 @@ namespace Windows.Devices.Pwm
                     dutyCycle = 1.0 - dutyCycle;
                 }
 
-                if(m_pwmPins[pin].Enabled)
+                if(m_pwmPins[pinIndex].Enabled)
                 {
-                    m_pwmPins[pin].Pin.SetDutyCycle((float)dutyCycle);
+                    m_pwmPins[pinIndex].Pin.SetDutyCycle((float)dutyCycle);
                 }
                 
                 // We always want to set this, so it gets picked up when the pin gets enabled
-                m_pwmPins[pin].PreviousDutyCycle = dutyCycle;
+                m_pwmPins[pinIndex].PreviousDutyCycle = dutyCycle;
             }
+        }
+
+        /// <summary>
+        /// Get the index of the pin in m_pwmPins
+        /// </summary>
+        /// <param name="pin">Real pin number</param>
+        /// <returns>Pin index</returns>
+        private int GetPinIndex(int pin)
+        {
+            int pinIndex = -1;
+
+            for(int i = m_providerInfo.PwmPinNumbers.Length - 1; i >= 0; i--)
+            {
+                if(m_providerInfo.PwmPinNumbers[i] == pin)
+                {
+                    pinIndex = i;
+                    break;
+                }
+            }
+            return pinIndex;
         }
     }
 }

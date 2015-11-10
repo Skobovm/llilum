@@ -151,8 +151,10 @@ namespace Microsoft.Zelig.Test.mbed.Simple
 
 #if LPC1768
         static int threadPin = (int)LPC1768.PinName.LED4;
+        static int pwmPinNumber = (int)LPC1768.PinName.p21;
 #elif K64F
         static int threadPin = (int)K64F.PinName.LED4;
+        static int pwmPinNumber = (int)K64F.PinName.D3;
 #else
 #error No target board defined.
 #endif
@@ -313,7 +315,7 @@ namespace Microsoft.Zelig.Test.mbed.Simple
             var pwmController = PwmController.GetDefaultAsync();
             pwmController.SetDesiredFrequency(1000000);
 
-            var pwmPin = pwmController.OpenPin(0);
+            var pwmPin = pwmController.OpenPin(pwmPinNumber);
             pwmPin.SetActiveDutyCyclePercentage(0.4F);
             pwmPin.Start();
 

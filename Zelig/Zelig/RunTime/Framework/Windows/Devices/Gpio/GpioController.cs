@@ -99,8 +99,6 @@ namespace Windows.Devices.Gpio
             }
             catch(InvalidOperationException)
             {
-                pin.Dispose();
-                pin = null;
                 status = GpioOpenStatus.PinUnavailable;
                 return false;
             }

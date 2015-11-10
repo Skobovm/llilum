@@ -59,7 +59,7 @@ namespace Windows.Devices.Pwm
 
             if(dutyCyclePercentage < 0 || dutyCyclePercentage > 1)
             {
-                throw new ArgumentOutOfRangeException("dutyCyclePercentage", string.Empty);
+                throw new ArgumentOutOfRangeException(nameof(dutyCyclePercentage), string.Empty);
             }
 
             m_dutyCycle = dutyCyclePercentage;
