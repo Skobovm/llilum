@@ -4,8 +4,22 @@
 
 //--//
 
+#include "mbed.h"
+DigitalOut myled((PinName)0x5);
+
+
 extern "C"
 {
+    uint fake_main() {
+        while (1) {
+            myled = 1; // LED is ON
+            wait(1.0); // 200 ms
+            myled = 0; // LED is OFF
+            wait(1.0); // 1 sec
+        }
+    }
+
+#if DEVICE_ANALOGOUT
     typedef struct LLOS_MbedAdc
     {
         union
@@ -127,4 +141,5 @@ extern "C"
     {
         return LLOS_E_NOTIMPL;
     }
+#endif
 }

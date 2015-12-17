@@ -591,15 +591,31 @@
 //}
 
 
+using System.Runtime.InteropServices;
+
 namespace TestProgram
 {
+    using Windows.Devices.Gpio;
+    using Windows.Devices.Spi;
+    using Windows.Devices.I2c;
+    using Windows.Devices.Enumeration;
+    using Windows.Devices.Adc;
+    using System.IO.Ports;
+    using Windows.Devices.Pwm;
+
+    using ZeligSupport = Microsoft.Zelig.Support.mbed;
+
     class TestProgram
     {
+        [DllImport("C")]
+        public static unsafe extern uint fake_main();
+
         static void Main()
         {
             while(true)
             {
                 // Spin
+                fake_main();
             }
         }
     }
