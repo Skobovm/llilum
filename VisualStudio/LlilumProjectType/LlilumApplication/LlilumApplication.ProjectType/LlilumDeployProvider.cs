@@ -23,8 +23,16 @@ namespace LlilumApplication
         [Import]
         private IThreadHandling ThreadHandling { get; set; }
 
-        private async Task DeployProcessStart(CancellationToken cancellationToken, TextWriter outputPaneWriter, ProcessStartInfo start)
+        private async Task RunDeployTool(CancellationToken cancellationToken, TextWriter outputPaneWriter, string deployToolPath, string deployToolArgs)
         {
+            ProcessStartInfo start = new ProcessStartInfo();
+            start.FileName = deployToolPath;
+            start.Arguments = deployToolArgs;
+            start.UseShellExecute = false;
+            start.RedirectStandardOutput = true;
+            start.RedirectStandardError = true;
+            start.CreateNoWindow = true;
+
             using (Process process = Process.Start(start))
             using (StreamReader stdOut = process.StandardOutput)
             using (StreamReader stdErr = process.StandardError)
@@ -46,34 +54,6 @@ namespace LlilumApplication
                     }
                 }
             }
-        }
-
-        private async Task DeployWithFlashTool(CancellationToken cancellationToken, TextWriter outputPaneWriter, string deployToolPath, string binaryPath, string flashToolArgs)
-        {
-            ProcessStartInfo start = new ProcessStartInfo();
-            start.FileName = deployToolPath;
-            start.Arguments = $"{EnsureQuotedPathIfNeeded(binaryPath)} {flashToolArgs}";
-            start.UseShellExecute = false;
-            start.RedirectStandardOutput = true;
-            start.RedirectStandardError = true;
-            start.CreateNoWindow = true;
-
-            await DeployProcessStart(cancellationToken, outputPaneWriter, start);
-        }
-
-        private async Task DeployWithSTLinkUtility(CancellationToken cancellationToken, TextWriter outputPaneWriter, string deployToolPath, string binaryPath, string stlinkConnectArgs, string stlinkEraseArgs, string stlinkProgramArgs)
-        {
-            ProcessStartInfo start = new ProcessStartInfo();
-            string stlinkDeployArgs = stlinkConnectArgs + " " + stlinkEraseArgs + " " + stlinkProgramArgs;
-
-            start.FileName = deployToolPath;
-            start.Arguments = stlinkDeployArgs;
-            start.UseShellExecute = false;
-            start.RedirectStandardOutput = true;
-            start.RedirectStandardError = true;
-            start.CreateNoWindow = true;
-
-            await DeployProcessStart(cancellationToken, outputPaneWriter, start);
         }
 
         public async Task DeployAsync( CancellationToken cancellationToken, TextWriter outputPaneWriter )
@@ -138,8 +118,9 @@ namespace LlilumApplication
             {
                 // Deploy with pyOCD Flash Tool
                 string flashToolArgs = await properties.LlilumFlashToolArgs.GetEvaluatedValueAtEndAsync();
-                await DeployWithFlashTool(cancellationToken, outputPaneWriter, deployToolPath, binaryPath, flashToolArgs);
+                flashToolArgs = $"{EnsureQuotedPathIfNeeded(binaryPath)} {flashToolArgs}";
 
+                await RunDeployTool(cancellationToken, outputPaneWriter, deployToolPath, flashToolArgs);
             }
             else if (string.Compare(deployTool, "stlinkutility", StringComparison.OrdinalIgnoreCase) == 0)
             {
@@ -147,8 +128,9 @@ namespace LlilumApplication
                 string stlinkConnectArgs = await properties.LlilumSTLinkUtilityConnectArgs.GetEvaluatedValueAtEndAsync();
                 string stlinkEraseArgs = await properties.LlilumSTLinkUtilityEraseArgs.GetEvaluatedValueAtEndAsync();
                 string stlinkProgramArgs = await properties.LlilumSTLinkUtilityProgramArgs.GetEvaluatedValueAtEndAsync();
+                string stlinkDeployArgs = stlinkConnectArgs + " " + stlinkEraseArgs + " " + stlinkProgramArgs;
 
-                await DeployWithSTLinkUtility(cancellationToken, outputPaneWriter, deployToolPath, binaryPath, stlinkConnectArgs, stlinkEraseArgs, stlinkProgramArgs);
+                await RunDeployTool(cancellationToken, outputPaneWriter, deployToolPath, stlinkDeployArgs);
             }
             else if (string.Compare(deployTool, "copytodrive", StringComparison.OrdinalIgnoreCase) == 0)
             {
